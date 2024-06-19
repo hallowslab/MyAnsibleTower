@@ -1,0 +1,43 @@
+---
+- name: Install packages on multiple Linux systems
+  hosts: all
+  become: yes
+  vars:
+    package_list: []
+  tasks:
+    - name: Ensure package list is provided
+      fail:
+        msg: "You must provide a list of packages"
+      when: package_list | length == 0
+
+    - name: Install packages on Debian-based systems
+      apt:
+        name: "{{ item }}"
+        state: present
+      when: ansible_os_family == "Debian"
+      loop: "{{ package_list }}"
+      tags: debian
+
+    - name: Install packages on RedHat-based systems
+      yum:
+        name: "{{ item }}"
+        state: present
+      when: ansible_os_family == "RedHat"
+      loop: "{{ package_list }}"
+      tags: redhat
+
+    - name: Install packages on SUSE-based systems
+      zypper:
+        name: "{{ item }}"
+        state: present
+      when: ansible_os_family == "Suse"
+      loop: "{{ package_list }}"
+      tags: suse
+
+    - name: Install packages on Arch-based systems
+      pacman:
+        name: "{{ item }}"
+        state: present
+      when: ansible_os_family == "Archlinux"
+      loop: "{{ package_list }}"
+      tags: archlinux
