@@ -14,7 +14,7 @@
       Suse: apache2
       Archlinux: httpd
     service_state: "started"  # Could be "started", "stopped", or "restarted"
-    service_enabled: True
+    service_enabled: true
     service_name: "{{ apache_service_name[ansible_os_family] | default('apache2') }}"
     package_name: "{{ apache_package_name[ansible_os_family] | default('apache2') }}"
   tasks:

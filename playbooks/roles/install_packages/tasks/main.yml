@@ -8,30 +8,30 @@
   apt:
     name: "{{ item }}"
     state: present
-  when: ansible_os_family == "Debian"
   loop: "{{ package_list }}"
+  when: ansible_os_family == "Debian"
   tags: debian
 
 - name: Install packages on RedHat-based systems
   yum:
     name: "{{ item }}"
     state: present
-  when: ansible_os_family == "RedHat"
   loop: "{{ package_list }}"
+  when: ansible_os_family == "RedHat"
   tags: redhat
 
 - name: Install packages on SUSE-based systems
   zypper:
     name: "{{ item }}"
     state: present
-  when: ansible_os_family == "Suse"
   loop: "{{ package_list }}"
+  when: ansible_os_family == "Suse"
   tags: suse
 
 - name: Install packages on Arch-based systems
   pacman:
     name: "{{ item }}"
     state: present
-  when: ansible_os_family == "Archlinux"
   loop: "{{ package_list }}"
+  when: ansible_os_family == "Archlinux"
   tags: archlinux
