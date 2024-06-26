@@ -1,0 +1,14 @@
+---
+- name: Database Backup
+  hosts: all
+  become: yes
+  vars:
+    mysql_root_password: "rootpassword"
+  tasks:
+    - name: Create backup directory
+      file:
+        path: /var/backups/db
+        state: directory
+
+    - name: Backup MySQL database
+      shell: mysqldump -u root -p{{ mysql_root_password }} mydatabase > /var/backups/db/mydatabase.sql

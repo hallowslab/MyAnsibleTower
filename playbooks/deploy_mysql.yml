@@ -1,0 +1,50 @@
+---
+- name: Deploy MySQL Server
+  hosts: all
+  become: yes
+  vars:
+    mysql_root_password: "rootpassword"
+    mysql_databases:
+      - name: example_db
+    mysql_users:
+      - name: example_user
+        password: "userpassword"
+        priv: "example_db.*:ALL"
+    package_name: "{{ 'mysql-server' if ansible_os_family == 'Debian' else 'mariadb-server' }}"
+    service_name: "{{ 'mysql' if ansible_os_family == 'Debian' else 'mariadb' }}"
+  tasks:
+    - name: Install mysql package
+      include_role:
+        name: install_packages
+      vars:
+        package_list: ["{{ package_name }}"]
+
+    - name: Manage Mysql service
+      include_role:
+        name: manage_service
+
+    - name: Set root password
+      mysql_user:
+        name: root
+        host: "{{ item }}"
+        password: "{{ mysql_root_password }}"
+      loop:
+        - "localhost"
+        - "127.0.0.1"
+        - "::1"
+        - "{{ ansible_hostname }}"
+        - "{{ inventory_hostname }}"
+
+    - name: Create databases
+      mysql_db:
+        name: "{{ item.name }}"
+        state: present
+      loop: "{{ mysql_databases }}"
+
+    - name: Create users
+      mysql_user:
+        name: "{{ item.name }}"
+        password: "{{ item.password }}"
+        priv: "{{ item.priv }}"
+        state: present
+      loop: "{{ mysql_users }}"
