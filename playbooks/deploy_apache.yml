@@ -57,3 +57,13 @@
               <h1>Welcome to Apache on {{ ansible_os_family }}</h1>
             </body>
           </html>
+
+    - name: Print Apache output using curl
+      shell: curl -sS http://127.0.0.1
+      register: curl_output
+      changed_when: false  # Since this task does not change anything on the target
+
+    - name: Display curl output
+      debug:
+        msg: "{{ curl_output.stdout }}"
+
