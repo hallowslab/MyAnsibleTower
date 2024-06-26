@@ -42,6 +42,12 @@
       include_role:
         name: manage_service
 
+    - name: Create directory /var/www/html if it doesn't exist
+      file:
+        path: /var/www/html
+        state: directory
+        mode: '0755'
+
     - name: Create a simple index.html
       copy:
         dest: /var/www/html/index.html
