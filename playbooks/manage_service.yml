@@ -1,6 +1,5 @@
 ---
 - name: Manage service from variables
-  hosts: all
   become: yes
   vars:
     service_name: ""  # Default service name
