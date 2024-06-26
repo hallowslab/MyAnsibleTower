@@ -18,6 +18,20 @@
     service_name: "{{ apache_service_name[ansible_os_family] | default('apache2') }}"
     package_name: "{{ apache_package_name[ansible_os_family] | default('apache2') }}"
   tasks:
+    - name: Debug ansible_os_family
+      debug:
+        msg: "Ansible OS Family detected: {{ ansible_os_family }}"
+      tags: debug
+    
+    - name: Debug other variables
+      debug:
+        msg: |
+          Package name: {{ package_name }}
+          Service name: {{ service_name }}
+          Service state: {{ service_state }}
+          Service enabled: {{ service_enabled }}
+      tags: debug
+
     - name: Install Apache package
       include_role:
         name: install_packages
@@ -27,10 +41,6 @@
     - name: Manage Apache service
       include_role:
         name: manage_service
-      vars:
-        service_name: "{{ service_name }}"
-        service_state: "{{ service_state }}"
-        service_enabled: "{{ service_enabled }}"
 
     - name: Create a simple index.html
       copy:
