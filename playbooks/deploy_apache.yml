@@ -3,7 +3,7 @@
   hosts: all
   become: yes
   vars:
-    apache_package:
+    apache_package_name:
       Debian: apache2
       RedHat: httpd
       Suse: apache2
@@ -12,22 +12,28 @@
       Debian: apache2
       RedHat: httpd
       Suse: apache2
-      Archlinux: httpd  # assuming httpd for Archlinux
-
+      Archlinux: httpd
+    service_state: "started"  # Could be "started", "stopped", or "restarted"
+    service_enabled: True
   tasks:
-    - name: Install Apache using the install_packages.yml playbook
-      include_tasks: install_packages.yml
-      vars:
-        package_list:
-          - "{{ apache_package[ansible_os_family] }}"
+    - name: Set service name based on OS family
+      set_fact:
+        service_name: "{{ apache_service_name[ansible_os_family] | default('apache2') }}"
+        package_name: "{{ apache_package_name[ansible_os_family] | default('apache2') }}"
 
-    - name: Start and enable apache trough manage_service.yml playbook
-      include_tasks: manage_service.yml
+    - name: Install Apache package
+      include_role:
+        name: install_packages
       vars:
-        service_name: "{{ apache_service_name[ansible_os_family] }}"
-        service_state: "started"
-        service_enabled: True
+        package_list: ["{{ package_name }}"]
 
+    - name: Manage Apache service
+      include_role:
+        name: manage_service
+      vars:
+        service_name: "{{ service_name }}"
+        service_state: "{{ service_state }}"
+        service_enabled: "{{ service_enabled }}"
 
     - name: Create a simple index.html
       copy:
