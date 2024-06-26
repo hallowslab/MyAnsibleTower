@@ -1,0 +1,22 @@
+---
+- name: Configure SSH keys for users
+  hosts: all
+  become: yes
+  vars:
+    ssh_users:
+      - name: user1
+        ssh_key: "ssh-rsa AAAA..."
+  tasks:
+    - name: Ensure .ssh directory exists
+      file:
+        path: /home/{{ item.name }}/.ssh
+        state: directory
+        mode: '0700'
+      loop: "{{ ssh_users }}"
+
+    - name: Add authorized key
+      authorized_key:
+        user: "{{ item.name }}"
+        key: "{{ item.ssh_key }}"
+        state: present
+      loop: "{{ ssh_users }}"

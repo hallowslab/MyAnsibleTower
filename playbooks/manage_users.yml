@@ -1,0 +1,19 @@
+---
+- name: Create users on multiple Linux systems
+  hosts: all
+  become: yes
+  vars:
+    users:
+      - name: user1
+        groups: sudo
+        state: present
+      - name: user2
+        groups: sudo
+        state: present
+  tasks:
+    - name: Ensure users are created
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        groups: "{{ item.groups }}"
+        state: "{{ item.state }}"
+      loop: "{{ users }}"

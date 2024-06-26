@@ -1,0 +1,40 @@
+---
+- name: Deploy Apache Web Server
+  hosts: all
+  become: yes
+  vars:
+    apache_package:
+      Debian: apache2
+      RedHat: httpd
+      Suse: apache2
+      Archlinux: apache
+    apache_service_name:
+      Debian: apache2
+      RedHat: httpd
+      Suse: apache2
+      Archlinux: httpd  # assuming httpd for Archlinux
+
+  tasks:
+    - name: Install Apache using the install_packages.yml playbook
+      include_tasks: install_packages.yml
+      vars:
+        package_list:
+          - "{{ apache_package[ansible_os_family] }}"
+
+    - name: Start and enable apache trough manage_service.yml playbook
+      include_tasks: manage_service.yml
+      vars:
+        service_name: "{{ apache_service_name[ansible_os_family] }}"
+        service_state: "started"
+        service_enabled: True
+
+
+    - name: Create a simple index.html
+      copy:
+        dest: /var/www/html/index.html
+        content: |
+          <html>
+            <body>
+              <h1>Welcome to Apache on {{ ansible_os_family }}</h1>
+            </body>
+          </html>
