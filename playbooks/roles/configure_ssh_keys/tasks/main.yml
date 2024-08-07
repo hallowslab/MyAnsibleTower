@@ -1,0 +1,19 @@
+---
+- name: Ensure ssh_users is provided
+  fail:
+    msg: "You must provide a list of users"
+  when: ssh_users | length == 0
+
+- name: Ensure .ssh directory exists
+  file:
+    path: /home/{{ item.name }}/.ssh
+    state: directory
+    mode: '0700'
+  loop: "{{ ssh_users }}"
+
+- name: Add authorized key
+  authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ item.ssh_key }}"
+    state: present
+  loop: "{{ ssh_users }}"
